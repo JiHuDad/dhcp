@@ -1,0 +1,32 @@
+# DHCPv6 Vendor Client Configuration
+
+[dhcp6]
+iface = "eth0"
+duid_path = "/var/lib/vendor-dhcp6/duid"
+timeout_seconds = 30
+
+[vendor]
+enterprise = 99999
+sn_env = "SN_NUMBER"
+code_sn = 71
+code_sig = 72
+code_cert_req = 73
+code_sig_dup = 74
+code_cert_reply = 77
+
+[paths]
+private_key = "/etc/vendor/keys/client.key"        # PEM (RSA-2048)
+request_cert = "/etc/vendor/certs/request.pem"     # subopt 73에 그대로 탑재
+reply_cert0 = "/var/lib/vendor-dhcp6/server0.pem"
+reply_cert1 = "/var/lib/vendor-dhcp6/server1.pem"
+reply_chain_bundle = "/var/lib/vendor-dhcp6/server_chain.pem"
+
+[advertise_gate]
+enabled = true
+require_vendor = true
+require_vendor_subopt = 90   # 예: Advertise에 벤더 서브옵션 90 존재해야 통과
+
+[logging]
+level = "info"
+path = "/var/log/vendor-dhcp6.log"
+hex_dump = false

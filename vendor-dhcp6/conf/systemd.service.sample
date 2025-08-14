@@ -1,0 +1,45 @@
+[Unit]
+Description=DHCPv6 Vendor Client
+Documentation=man:vendor-dhclient(8)
+Wants=network-online.target
+After=network-online.target
+Before=multi-user.target
+Conflicts=shutdown.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/bin/vendor-dhclient --config /etc/vendor/dhcp6-vendor.conf --iface %i
+Environment=SN_NUMBER=
+EnvironmentFile=-/etc/vendor/environment
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=vendor-dhcp6
+
+# Security settings
+User=root
+Group=root
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ReadWritePaths=/var/lib/vendor-dhcp6 /var/log
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET6 AF_UNIX
+RestrictNamespaces=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+RemoveIPC=yes
+
+[Install]
+WantedBy=multi-user.target
+
+# Usage:
+# 1. Copy to /etc/systemd/system/vendor-dhcp6@.service
+# 2. Create /etc/vendor/environment with SN_NUMBER=your_serial
+# 3. Enable: systemctl enable vendor-dhcp6@eth0.service  
+# 4. Start: systemctl start vendor-dhcp6@eth0.service
