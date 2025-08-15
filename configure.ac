@@ -629,6 +629,46 @@ if test "$have_nanosleep" = "rt"; then
 	LIBS="-lrt $LIBS"
 fi
 
+# Check for OpenSSL for vendor-specific options crypto support
+AC_ARG_WITH([openssl],
+    AS_HELP_STRING([--with-openssl=PATH], [Path to OpenSSL installation]),
+    [openssl_path="$withval"], [openssl_path=""])
+
+AC_ARG_ENABLE([vendor-options],
+    AS_HELP_STRING([--enable-vendor-options], [Enable DHCPv6 vendor-specific options support (requires OpenSSL)]),
+    [enable_vendor_options="$enableval"], [enable_vendor_options="no"])
+
+if test "$enable_vendor_options" = "yes"; then
+    if test "$openssl_path" != ""; then
+        CPPFLAGS="$CPPFLAGS -I$openssl_path/include"
+        LDFLAGS="$LDFLAGS -L$openssl_path/lib"
+    fi
+    
+    AC_CHECK_HEADERS([openssl/rsa.h openssl/pem.h openssl/sha.h], 
+                     [have_openssl_headers="yes"], 
+                     [have_openssl_headers="no"])
+    
+    if test "$have_openssl_headers" = "yes"; then
+        AC_CHECK_LIB([crypto], [RSA_new], 
+                     [have_openssl_crypto="yes"], 
+                     [have_openssl_crypto="no"])
+        
+        AC_CHECK_LIB([ssl], [SSL_new], 
+                     [have_openssl_ssl="yes"], 
+                     [have_openssl_ssl="no"])
+    fi
+    
+    if test "$have_openssl_headers" = "yes" && test "$have_openssl_crypto" = "yes"; then
+        AC_DEFINE([HAVE_OPENSSL], [1], [Define if OpenSSL is available])
+        LIBS="-lcrypto -lssl $LIBS"
+        AC_MSG_NOTICE([OpenSSL support enabled for vendor-specific options])
+    else
+        AC_MSG_ERROR([OpenSSL not found. Install OpenSSL development packages or use --without-openssl])
+    fi
+else
+    AC_MSG_NOTICE([Vendor-specific options support disabled])
+fi
+
 # check for /dev/random (declares ISC_PATH_RANDOMDEV)
 AC_MSG_CHECKING(for random device)
 AC_ARG_WITH(randomdev,

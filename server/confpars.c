@@ -42,6 +42,12 @@ static int parse_iaid_duid(struct parse *cfile, struct ia_xx** ia,
 			   u_int32_t *iaid, const char* file, int line);
 #endif
 
+#ifdef VENDOR_OPTIONS
+static void parse_vendor_config_declaration(struct parse *cfile, struct group *group);
+static int parse_vendor_config_statement(struct parse *cfile, struct group *group, uint32_t enterprise_num);
+static int parse_vendor_sub_option_config(struct parse *cfile, struct group *group, uint32_t enterprise_num);
+#endif
+
 #if defined (TRACING)
 trace_type_t *trace_readconf_type;
 trace_type_t *trace_readleases_type;
@@ -528,6 +534,13 @@ int parse_statement (cfile, group, type, host_decl, declaration)
 		}
 		parse_class_declaration(NULL, cfile, group, CLASS_TYPE_VENDOR);
 		return 1;
+
+#ifdef VENDOR_OPTIONS
+	      case VENDOR_CONFIG:
+		skip_token(&val, (unsigned *)0, cfile);
+		parse_vendor_config_declaration(cfile, group);
+		return 1;
+#endif
 
 	      case USER_CLASS:
 		skip_token(&val, (unsigned *)0, cfile);
@@ -6436,4 +6449,315 @@ parse_iaid_duid(struct parse* cfile, struct ia_xx** ia, u_int32_t *iaid,
 	return (1);
 }
 
-#endif /* DHCPv6 */
+#ifdef VENDOR_OPTIONS
+/* 
+ * Parse vendor-config declaration
+ * vendor-config enterprise-12345 { ... }
+ */
+static void parse_vendor_config_declaration(struct parse *cfile, struct group *group) {
+	enum dhcp_token token;
+	const char *val;
+	uint32_t enterprise_num = 0;
+	char *enterprise_name = NULL;
+	int len;
+
+	/* Parse enterprise identifier */
+	token = next_token(&val, (unsigned *)0, cfile);
+	if (token != NAME && token != STRING) {
+		parse_warn(cfile, "expecting enterprise identifier.");
+		skip_to_semi(cfile);
+		return;
+	}
+
+	/* Extract enterprise number from enterprise-XXXXX format */
+	if (strncasecmp(val, "enterprise-", 11) == 0) {
+		enterprise_num = strtoul(val + 11, NULL, 10);
+		if (enterprise_num == 0) {
+			parse_warn(cfile, "invalid enterprise number in %s", val);
+			skip_to_semi(cfile);
+			return;
+		}
+	} else {
+		parse_warn(cfile, "enterprise identifier must be in format 'enterprise-XXXXX'");
+		skip_to_semi(cfile);
+		return;
+	}
+
+	/* Store enterprise name for configuration */
+	len = strlen(val) + 1;
+	enterprise_name = dmalloc(len, MDL);
+	if (!enterprise_name) {
+		parse_warn(cfile, "no memory for enterprise name");
+		skip_to_semi(cfile);
+		return;
+	}
+	strcpy(enterprise_name, val);
+
+	/* Expect opening brace */
+	token = next_token(&val, (unsigned *)0, cfile);
+	if (token != LBRACE) {
+		parse_warn(cfile, "expecting '{'");
+		dfree(enterprise_name, MDL);
+		skip_to_semi(cfile);
+		return;
+	}
+
+	log_info("Parsing vendor-config for enterprise %u (%s)", 
+			 enterprise_num, enterprise_name);
+
+	/* Parse vendor-config parameters */
+	do {
+		token = peek_token(&val, (unsigned *)0, cfile);
+		if (token == RBRACE) {
+			skip_token(&val, (unsigned *)0, cfile);
+			break;
+		}
+
+		if (token == END_OF_FILE) {
+			parse_warn(cfile, "unexpected end of file in vendor-config");
+			break;
+		}
+
+		/* Parse vendor config statements */
+		if (!parse_vendor_config_statement(cfile, group, enterprise_num)) {
+			/* Skip to next statement on parse error */
+			skip_to_semi(cfile);
+		}
+	} while (1);
+
+	/* TODO: Store vendor configuration in global structure */
+	/* This would typically register the configuration with the vendor handler */
+	
+	dfree(enterprise_name, MDL);
+}
+
+/*
+ * Parse individual vendor config statements
+ */
+static int parse_vendor_config_statement(struct parse *cfile, struct group *group, uint32_t enterprise_num) {
+	enum dhcp_token token;
+	const char *val;
+
+	token = peek_token(&val, (unsigned *)0, cfile);
+	
+	switch (token) {
+		case NAME:
+			skip_token(&val, (unsigned *)0, cfile);
+			if (!strcasecmp(val, "enabled")) {
+				token = next_token(&val, (unsigned *)0, cfile);
+				if (token == NAME) {
+					if (!strcasecmp(val, "true") || !strcasecmp(val, "yes")) {
+						log_info("  enabled: true");
+					} else if (!strcasecmp(val, "false") || !strcasecmp(val, "no")) {
+						log_info("  enabled: false");
+					} else {
+						parse_warn(cfile, "expecting true/false for enabled");
+						return 0;
+					}
+				} else {
+					parse_warn(cfile, "expecting boolean value for enabled");
+					return 0;
+				}
+				parse_semi(cfile);
+				return 1;
+			}
+			else if (!strcasecmp(val, "auto-respond")) {
+				token = next_token(&val, (unsigned *)0, cfile);
+				if (token == NAME) {
+					if (!strcasecmp(val, "true") || !strcasecmp(val, "yes")) {
+						log_info("  auto-respond: true");
+					} else if (!strcasecmp(val, "false") || !strcasecmp(val, "no")) {
+						log_info("  auto-respond: false");
+					} else {
+						parse_warn(cfile, "expecting true/false for auto-respond");
+						return 0;
+					}
+				} else {
+					parse_warn(cfile, "expecting boolean value for auto-respond");
+					return 0;
+				}
+				parse_semi(cfile);
+				return 1;
+			}
+			else if (!strcasecmp(val, "private-key")) {
+				token = next_token(&val, (unsigned *)0, cfile);
+				if (token == STRING) {
+					log_info("  private-key: %s", val);
+				} else {
+					parse_warn(cfile, "expecting string value for private-key");
+					return 0;
+				}
+				parse_semi(cfile);
+				return 1;
+			}
+			else if (!strcasecmp(val, "certificate-chain")) {
+				token = next_token(&val, (unsigned *)0, cfile);
+				if (token == STRING) {
+					log_info("  certificate-chain: %s", val);
+				} else {
+					parse_warn(cfile, "expecting string value for certificate-chain");
+					return 0;
+				}
+				parse_semi(cfile);
+				return 1;
+			}
+			else if (!strcasecmp(val, "require-signature")) {
+				token = next_token(&val, (unsigned *)0, cfile);
+				if (token == NAME) {
+					if (!strcasecmp(val, "true") || !strcasecmp(val, "yes")) {
+						log_info("  require-signature: true");
+					} else if (!strcasecmp(val, "false") || !strcasecmp(val, "no")) {
+						log_info("  require-signature: false");
+					} else {
+						parse_warn(cfile, "expecting true/false for require-signature");
+						return 0;
+					}
+				} else {
+					parse_warn(cfile, "expecting boolean value for require-signature");
+					return 0;
+				}
+				parse_semi(cfile);
+				return 1;
+			}
+			else if (!strcasecmp(val, "sub-option")) {
+				return parse_vendor_sub_option_config(cfile, group, enterprise_num);
+			}
+			else {
+				parse_warn(cfile, "unknown vendor config parameter: %s", val);
+				return 0;
+			}
+			break;
+
+		default:
+			parse_warn(cfile, "unexpected token in vendor config");
+			return 0;
+	}
+	
+	return 0;
+}
+
+/*
+ * Parse sub-option configuration
+ * sub-option 71 { type "serial-number"; validate true; }
+ */
+static int parse_vendor_sub_option_config(struct parse *cfile, struct group *group, uint32_t enterprise_num) {
+	enum dhcp_token token;
+	const char *val;
+	uint32_t sub_option_code;
+
+	/* Parse sub-option code */
+	token = next_token(&val, (unsigned *)0, cfile);
+	if (token != NUMBER) {
+		parse_warn(cfile, "expecting sub-option code number");
+		return 0;
+	}
+	
+	sub_option_code = strtoul(val, NULL, 10);
+	if (sub_option_code > 255) {
+		parse_warn(cfile, "sub-option code must be 0-255");
+		return 0;
+	}
+
+	log_info("  parsing sub-option %u", sub_option_code);
+
+	/* Expect opening brace */
+	token = next_token(&val, (unsigned *)0, cfile);
+	if (token != LBRACE) {
+		parse_warn(cfile, "expecting '{'");
+		return 0;
+	}
+
+	/* Parse sub-option parameters */
+	do {
+		token = peek_token(&val, (unsigned *)0, cfile);
+		if (token == RBRACE) {
+			skip_token(&val, (unsigned *)0, cfile);
+			break;
+		}
+
+		if (token == END_OF_FILE) {
+			parse_warn(cfile, "unexpected end of file in sub-option config");
+			return 0;
+		}
+
+		/* Parse sub-option configuration statements */
+		token = next_token(&val, (unsigned *)0, cfile);
+		if (token == NAME) {
+			if (!strcasecmp(val, "type")) {
+				token = next_token(&val, (unsigned *)0, cfile);
+				if (token == STRING) {
+					log_info("    type: %s", val);
+				} else {
+					parse_warn(cfile, "expecting string value for type");
+					return 0;
+				}
+				parse_semi(cfile);
+			}
+			else if (!strcasecmp(val, "validate")) {
+				token = next_token(&val, (unsigned *)0, cfile);
+				if (token == NAME) {
+					if (!strcasecmp(val, "true") || !strcasecmp(val, "yes")) {
+						log_info("    validate: true");
+					} else if (!strcasecmp(val, "false") || !strcasecmp(val, "no")) {
+						log_info("    validate: false");
+					} else {
+						parse_warn(cfile, "expecting true/false for validate");
+						return 0;
+					}
+				} else {
+					parse_warn(cfile, "expecting boolean value for validate");
+					return 0;
+				}
+				parse_semi(cfile);
+			}
+			else if (!strcasecmp(val, "required")) {
+				token = next_token(&val, (unsigned *)0, cfile);
+				if (token == NAME) {
+					if (!strcasecmp(val, "true") || !strcasecmp(val, "yes")) {
+						log_info("    required: true");
+					} else if (!strcasecmp(val, "false") || !strcasecmp(val, "no")) {
+						log_info("    required: false");
+					} else {
+						parse_warn(cfile, "expecting true/false for required");
+						return 0;
+					}
+				} else {
+					parse_warn(cfile, "expecting boolean value for required");
+					return 0;
+				}
+				parse_semi(cfile);
+			}
+			else if (!strcasecmp(val, "algorithm")) {
+				token = next_token(&val, (unsigned *)0, cfile);
+				if (token == STRING) {
+					log_info("    algorithm: %s", val);
+				} else {
+					parse_warn(cfile, "expecting string value for algorithm");
+					return 0;
+				}
+				parse_semi(cfile);
+			}
+			else if (!strcasecmp(val, "save-path")) {
+				token = next_token(&val, (unsigned *)0, cfile);
+				if (token == STRING) {
+					log_info("    save-path: %s", val);
+				} else {
+					parse_warn(cfile, "expecting string value for save-path");
+					return 0;
+				}
+				parse_semi(cfile);
+			}
+			else {
+				parse_warn(cfile, "unknown sub-option parameter: %s", val);
+				skip_to_semi(cfile);
+			}
+		} else {
+			parse_warn(cfile, "expecting parameter name in sub-option config");
+			skip_to_semi(cfile);
+		}
+	} while (1);
+
+	return 1;
+}
+
+#endif /* VENDOR_OPTIONS */

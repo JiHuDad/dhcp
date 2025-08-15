@@ -1471,6 +1471,16 @@ void postconf_initialization (int quiet)
 
 	/* Don't need the options anymore. */
 	option_state_dereference(&options, MDL);
+
+#ifdef DHCPv6
+	/* Initialize vendor handler for DHCPv6 vendor-specific options */
+	if (vendor_handler_init() != VSO_SUCCESS) {
+		log_error("Failed to initialize vendor options handler");
+		/* Continue startup even if vendor options fail */
+	} else {
+		log_info("Vendor options handler initialized");
+	}
+#endif
 }
 
 void postdb_startup (void)

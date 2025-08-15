@@ -17,6 +17,14 @@
 /*! \file server/dhcpv6.c */
 
 #include "dhcpd.h"
+#include "vendor_options.h"
+
+/* Vendor handler function declarations */
+int vendor_handler_init(void);
+void vendor_handler_cleanup(void);
+int vendor_handle_request(struct packet *packet,
+                         struct option_state *options,
+                         struct option_state *reply_options);
 
 #ifdef DHCPv6
 
@@ -1960,6 +1968,16 @@ lease_to_client(struct data_string *reply_ret,
 	}
 	memcpy(reply_ret->buffer->data, reply.buf.data, reply.cursor);
 	reply_ret->data = reply_ret->buffer->data;
+
+	/* Handle vendor-specific options if present */
+	if (packet->options != NULL && reply.opt_state != NULL) {
+		int vso_result = vendor_handle_request(packet, packet->options, reply.opt_state);
+		if (vso_result != VSO_SUCCESS && vso_result != VSO_NOT_FOUND) {
+			log_debug("Vendor options processing failed: %s", 
+			         vendor_get_error_string(vso_result));
+			/* Continue with normal processing even if VSO handling fails */
+		}
+	}
 
 	/* If appropriate commit and rotate the lease file */
 	(void) commit_leases_timed();

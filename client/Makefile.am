@@ -10,6 +10,7 @@ AM_CPPFLAGS += -DLOCALSTATEDIR='"$(localstatedir)"'
 dist_sysconf_DATA = dhclient.conf.example
 sbin_PROGRAMS = dhclient
 dhclient_SOURCES = client_tables.c clparse.c dhclient.c dhc6.c \
+		   vendor_client.c \
 		   scripts/bsdos scripts/freebsd scripts/linux scripts/macos \
 		   scripts/netbsd scripts/nextstep scripts/openbsd \
 		   scripts/solaris scripts/openwrt

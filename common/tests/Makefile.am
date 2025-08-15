@@ -9,7 +9,7 @@ ATF_TESTS =
 if HAVE_ATF
 
 ATF_TESTS += alloc_unittest dns_unittest misc_unittest ns_name_unittest \
-	option_unittest domain_name_unittest
+	option_unittest domain_name_unittest crypto_utils_unittest vendor_options_unittest
 
 alloc_unittest_SOURCES = test_alloc.c $(top_srcdir)/tests/t_api_dhcp.c
 alloc_unittest_LDADD = $(ATF_LDFLAGS)
@@ -55,6 +55,22 @@ domain_name_unittest_SOURCES = domain_name_test.c \
 	$(top_srcdir)/tests/t_api_dhcp.c
 domain_name_unittest_LDADD = $(ATF_LDFLAGS)
 domain_name_unittest_LDADD += ../libdhcp.@A@ ../../omapip/libomapi.@A@ \
+	@BINDLIBIRSDIR@/libirs.@A@ \
+	@BINDLIBDNSDIR@/libdns.@A@ \
+	@BINDLIBISCCFGDIR@/libisccfg.@A@  \
+	@BINDLIBISCDIR@/libisc.@A@
+
+crypto_utils_unittest_SOURCES = crypto_utils_unittest.c $(top_srcdir)/tests/t_api_dhcp.c
+crypto_utils_unittest_LDADD = $(ATF_LDFLAGS)
+crypto_utils_unittest_LDADD += ../libdhcp.@A@ ../../omapip/libomapi.@A@ \
+	@BINDLIBIRSDIR@/libirs.@A@ \
+	@BINDLIBDNSDIR@/libdns.@A@ \
+	@BINDLIBISCCFGDIR@/libisccfg.@A@  \
+	@BINDLIBISCDIR@/libisc.@A@
+
+vendor_options_unittest_SOURCES = vendor_options_unittest.c $(top_srcdir)/tests/t_api_dhcp.c
+vendor_options_unittest_LDADD = $(ATF_LDFLAGS)
+vendor_options_unittest_LDADD += ../libdhcp.@A@ ../../omapip/libomapi.@A@ \
 	@BINDLIBIRSDIR@/libirs.@A@ \
 	@BINDLIBDNSDIR@/libdns.@A@ \
 	@BINDLIBISCCFGDIR@/libisccfg.@A@  \

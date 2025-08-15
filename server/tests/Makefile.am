@@ -28,7 +28,7 @@ DHCPLIBS = $(top_builddir)/common/libdhcp.@A@ \
 ATF_TESTS =
 if HAVE_ATF
 
-ATF_TESTS += dhcpd_unittests legacy_unittests hash_unittests load_bal_unittests leaseq_unittests
+ATF_TESTS += dhcpd_unittests legacy_unittests hash_unittests load_bal_unittests leaseq_unittests vendor_handler_unittests
 
 dhcpd_unittests_SOURCES = $(DHCPSRC)
 dhcpd_unittests_SOURCES += simple_unittest.c
@@ -50,6 +50,9 @@ load_bal_unittests_LDADD = $(DHCPLIBS) $(ATF_LDFLAGS)
 
 leaseq_unittests_SOURCES = $(DHCPSRC) leaseq_unittest.c
 leaseq_unittests_LDADD = $(DHCPLIBS) $(ATF_LDFLAGS)
+
+vendor_handler_unittests_SOURCES = $(DHCPSRC) vendor_handler_unittest.c
+vendor_handler_unittests_LDADD = $(DHCPLIBS) $(ATF_LDFLAGS)
 
 check: $(ATF_TESTS)
 	@if test $(top_srcdir) != ${top_builddir}; then \

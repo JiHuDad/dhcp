@@ -25,6 +25,13 @@
 
 #include "dhcpd.h"
 
+/* Vendor client function declarations */
+int client_vendor_init(void);
+void client_vendor_cleanup(void);
+int client_vendor_generate_request(struct option_state *options);
+int client_vendor_process_reply(struct packet *packet);
+int client_vendor_enabled(void);
+
 #ifdef DHCPv6
 
 struct sockaddr_in6 DHCPv6DestAddr;
@@ -696,6 +703,15 @@ dhc6_leaseify(struct packet *packet, struct client_state* client)
 				    client, lease->options, lease->options,
 				    &global_scope, client->config->on_receipt,
 				    NULL, NULL);
+
+	/* Process vendor-specific options if present */
+	if (client_vendor_enabled()) {
+		int vso_result = client_vendor_process_reply(packet);
+		if (vso_result != 0) {
+			log_debug("Failed to process vendor options from reply: error %d", vso_result);
+			/* Continue normal processing even if VSO processing fails */
+		}
+	}
 
 	return lease;
 }
@@ -5853,6 +5869,15 @@ make_client6_options(struct client_state *client, struct option_state **op,
 	 * need to dereference it (XXX).
 	 */
 	option_cache_dereference(&oc, MDL);
+
+	/* Generate vendor-specific options if enabled */
+	if (client_vendor_enabled()) {
+		int vso_result = client_vendor_generate_request(*op);
+		if (vso_result != 0) {
+			log_debug("Failed to generate vendor options: error %d", vso_result);
+			/* Continue without vendor options */
+		}
+	}
 }
 
 /* A clone of the DHCPv4 script_write_params() minus the DHCPv4-specific

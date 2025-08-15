@@ -1543,6 +1543,8 @@ intern(char *atom, enum dhcp_token dfv) {
 			return V6RELOPT;
 		if (!strcasecmp (atom + 1, "endor-class"))
 			return VENDOR_CLASS;
+		if (!strcasecmp (atom + 1, "endor-config"))
+			return VENDOR_CONFIG;
 		if (!strcasecmp (atom + 1, "endor"))
 			return VENDOR;
 		break;

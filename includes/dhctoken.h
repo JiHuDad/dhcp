@@ -377,7 +377,8 @@ enum dhcp_token {
 	TOKEN_HEX = 677,
 	TOKEN_OCTAL = 678,
 	KEY_ALGORITHM = 679,
-	DISCONNECT = 680
+	DISCONNECT = 680,
+	VENDOR_CONFIG = 681
 };
 
 #define is_identifier(x)	((x) >= FIRST_TOKEN &&	\

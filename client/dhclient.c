@@ -880,6 +880,18 @@ main(int argc, char **argv) {
 		dhcp4o6_setup(dhcp4o6_port);
 #endif
 
+	/* Initialize vendor client for DHCPv6 */
+#ifdef DHCPv6
+	if (local_family == AF_INET6) {
+		/* Initialize vendor client handler */
+		if (client_vendor_init() != 0) {
+			log_error("Failed to initialize vendor client handler");
+			/* Continue without vendor options */
+		} else {
+			log_info("Vendor client handler initialized");
+		}
+#endif
+
 	/* Start a configuration state machine for each interface. */
 #ifdef DHCPv6
 	if (local_family == AF_INET6) {

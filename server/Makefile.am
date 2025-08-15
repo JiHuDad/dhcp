@@ -10,7 +10,8 @@ dist_sysconf_DATA = dhcpd.conf.example
 sbin_PROGRAMS = dhcpd
 dhcpd_SOURCES = dhcpd.c dhcp.c bootp.c confpars.c db.c class.c failover.c \
 		omapi.c mdb.c stables.c salloc.c ddns.c dhcpleasequery.c \
-		dhcpv6.c mdb6.c ldap.c ldap_casa.c leasechain.c ldap_krb_helper.c
+		dhcpv6.c mdb6.c ldap.c ldap_casa.c leasechain.c ldap_krb_helper.c \
+		vendor_handler.c
 
 dhcpd_CFLAGS = $(LDAP_CFLAGS)
 dhcpd_LDADD = ../common/libdhcp.@A@ ../omapip/libomapi.@A@ \
