@@ -279,7 +279,7 @@ int vendor_extract_from_packet(const struct packet *packet,
     
     /* Evaluate the option data */
     memset(&vso_data, 0, sizeof(vso_data));
-    if (!evaluate_option_cache(&vso_data, packet, NULL, NULL, NULL,
+    if (!evaluate_option_cache(&vso_data, (struct packet *)packet, NULL, NULL, NULL,
                               NULL, &global_scope, oc, MDL)) {
         vendor_log_error("Failed to evaluate vendor-specific option");
         return VSO_ERROR;
@@ -308,7 +308,6 @@ int vendor_extract_from_packet(const struct packet *packet,
 int vendor_add_to_options(struct option_state *options,
                          const struct vendor_option *vso) {
     struct data_string vso_data;
-    struct option_cache *oc;
     int result;
     
     if (!options || !vso) {
@@ -322,20 +321,18 @@ int vendor_add_to_options(struct option_state *options,
         return result;
     }
     
-    /* Create option cache */
-    oc = NULL;
-    if (!option_cache_allocate(&oc, MDL)) {
+    /* Save the VSO data to option state using save_option_buffer */
+    if (!save_option_buffer(&dhcpv6_universe, options, 
+                           vso_data.buffer, 
+                           (unsigned char *)vso_data.data, 
+                           vso_data.len,
+                           D6O_VENDOR_OPTS, 0)) {
+        vendor_log_error("Failed to save vendor-specific option");
         data_string_forget(&vso_data, MDL);
         return VSO_ERROR;
     }
     
-    /* Set up the option cache */
-    oc->data = vso_data;
-    oc->option = dhcp_universe.options[D6O_VENDOR_OPTS];
-    
-    /* Save to option state */
-    save_option(&dhcpv6_universe, options, oc);
-    option_cache_dereference(&oc, MDL);
+    data_string_forget(&vso_data, MDL);
     
     vendor_log_debug("Added VSO to option state");
     return VSO_SUCCESS;
@@ -623,5 +620,26 @@ int vendor_verify_signature(const char *data,
         return VSO_CRYPTO_ERROR;
     }
     
+    return VSO_SUCCESS;
+}
+
+/* Split certificate chain - stub implementation */
+int vendor_split_certificate_chain(const struct data_string *chain,
+                                  struct data_string *cert1,
+                                  struct data_string *cert2) {
+    if (!chain || !cert1 || !cert2) {
+        return VSO_INVALID_DATA;
+    }
+    
+    /* Simple stub implementation - assumes single certificate */
+    memset(cert1, 0, sizeof(*cert1));
+    memset(cert2, 0, sizeof(*cert2));
+    
+    /* Copy entire chain to cert1 */
+    if (chain->len > 0 && chain->data) {
+        data_string_copy(cert1, chain, MDL);
+    }
+    
+    vendor_log_debug("Certificate chain split completed (stub implementation)");
     return VSO_SUCCESS;
 }

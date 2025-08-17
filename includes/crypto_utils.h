@@ -17,7 +17,9 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include "dhcpd.h"
+
+/* Forward declarations to avoid circular includes */
+struct data_string;
 
 /* Return codes */
 #define CRYPTO_SUCCESS       0

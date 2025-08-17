@@ -17,8 +17,11 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include "dhcpd.h"
-#include "crypto_utils.h"
+
+/* Forward declarations to avoid circular includes */
+struct packet;
+struct option_state;
+struct data_string;
 
 /* VSO processing return codes */
 #define VSO_SUCCESS            0
@@ -207,5 +210,15 @@ const struct vendor_enterprise_handler *vendor_get_enterprise_handler(uint32_t e
 
 #define vendor_log_debug(fmt, ...) \
     log_debug("Vendor Options: " fmt, ##__VA_ARGS__)
+
+/* Client-side vendor options functions */
+#ifdef DHCPv6
+int client_vendor_init(void);
+void client_vendor_cleanup(void);
+int client_vendor_generate_request(struct option_state *options);
+int client_vendor_process_response(const struct packet *packet, 
+                                  struct option_state *options);
+int client_vendor_is_enabled(void);
+#endif
 
 #endif /* VENDOR_OPTIONS_H */

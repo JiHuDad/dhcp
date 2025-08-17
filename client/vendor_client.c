@@ -13,11 +13,10 @@
  */
 
 #include "dhcpd.h"
-
-#ifdef DHCPv6
-
 #include "vendor_options.h"
 #include "crypto_utils.h"
+
+#ifdef DHCPv6
 
 #include <sys/stat.h>
 #include <stdlib.h>
@@ -313,7 +312,7 @@ static int client_generate_request_vso(struct vendor_option *vso) {
             log_info("Added client certificate (%u bytes)", client_cert.len);
         }
     } else {
-        log_warn("Failed to load client certificate from %s: %s",
+        log_info("Failed to load client certificate from %s: %s",
                 client_config.request_certificate_path,
                 crypto_get_error_string(result));
         /* Continue without certificate - not always required */
@@ -325,7 +324,7 @@ static int client_generate_request_vso(struct vendor_option *vso) {
         int dup_result = vendor_add_sub_option(vso, VSO_SUBOPT_SIGNATURE_DUP,
                                               signature.data, signature.len);
         if (dup_result != VSO_SUCCESS) {
-            log_warn("Failed to add duplicate signature sub-option");
+            log_info("Failed to add duplicate signature sub-option");
             /* Continue - duplicate signature is optional */
         }
     }

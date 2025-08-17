@@ -6761,3 +6761,5 @@ static int parse_vendor_sub_option_config(struct parse *cfile, struct group *gro
 }
 
 #endif /* VENDOR_OPTIONS */
+
+#endif /* DHCPv6 */

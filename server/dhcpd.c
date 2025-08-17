@@ -1474,12 +1474,8 @@ void postconf_initialization (int quiet)
 
 #ifdef DHCPv6
 	/* Initialize vendor handler for DHCPv6 vendor-specific options */
-	if (vendor_handler_init() != VSO_SUCCESS) {
-		log_error("Failed to initialize vendor options handler");
-		/* Continue startup even if vendor options fail */
-	} else {
-		log_info("Vendor options handler initialized");
-	}
+	/* Vendor options functionality is currently disabled */
+	log_info("DHCPv6 vendor options support available but disabled");
 #endif
 }
 

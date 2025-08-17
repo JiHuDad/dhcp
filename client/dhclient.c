@@ -32,6 +32,12 @@
 
 #include "dhcpd.h"
 #include <isc/util.h>
+
+/* Vendor client function declarations */
+#ifdef DHCPv6
+int client_vendor_init(void);
+void client_vendor_cleanup(void);
+#endif
 #include <isc/file.h>
 #include <dns/result.h>
 #include <syslog.h>
@@ -890,6 +896,7 @@ main(int argc, char **argv) {
 		} else {
 			log_info("Vendor client handler initialized");
 		}
+	}
 #endif
 
 	/* Start a configuration state machine for each interface. */
@@ -1141,22 +1148,16 @@ isc_result_t find_class (struct class **c,
 	return 0;
 }
 
-int check_collection (packet, lease, collection)
-	struct packet *packet;
-	struct lease *lease;
-	struct collection *collection;
+int check_collection (struct packet *packet, struct lease *lease, struct collection *collection)
 {
 	return 0;
 }
 
-void classify (packet, class)
-	struct packet *packet;
-	struct class *class;
+void classify (struct packet *packet, struct class *class)
 {
 }
 
-void unbill_class (lease)
-	struct lease *lease;
+void unbill_class (struct lease *lease)
 {
 }
 
@@ -1195,8 +1196,7 @@ int find_subnet (struct subnet **sp,
  * can no longer legitimately use the lease.
  */
 
-void state_reboot (cpp)
-	void *cpp;
+void state_reboot (void *cpp)
 {
 	struct client_state *client = cpp;
 
@@ -1248,8 +1248,7 @@ void state_reboot (cpp)
 /* Called when a lease has completely expired and we've been unable to
    renew it. */
 
-void state_init (cpp)
-	void *cpp;
+void state_init (void *cpp)
 {
 	struct client_state *client = cpp;
 
@@ -1273,9 +1272,7 @@ void state_init (cpp)
  * requested v6-only-preferred option is present and returned the
  * V6ONLY_WAIT delay to suspend DHCPv4. */
 
-uint32_t check_v6only(packet, client)
-	struct packet *packet;
-	struct client_state *client;
+uint32_t check_v6only(struct packet *packet, struct client_state *client)
 {
 	int i;
 	struct option **req;
