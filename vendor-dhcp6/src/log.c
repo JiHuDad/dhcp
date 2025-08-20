@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,6 +7,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <errno.h>
+#include <strings.h>
 #include "log.h"
 
 static FILE *log_file = NULL;

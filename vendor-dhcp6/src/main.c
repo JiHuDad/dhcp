@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,6 +11,9 @@
 #include <arpa/inet.h>
 #include <net/if.h>
 #include <errno.h>
+#ifdef __linux__
+#include <linux/sockios.h>
+#endif
 
 #include "cfg.h"
 #include "log.h"
@@ -86,12 +90,16 @@ static int create_dhcp6_socket(const char *interface) {
     
     // Bind to interface if specified
     if (interface) {
+#ifdef SO_BINDTODEVICE
         if (setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, interface, strlen(interface)) < 0) {
             log_error("Failed to bind to interface %s: %s", interface, strerror(errno));
             close(sock);
             return -1;
         }
         log_info("Bound to interface %s", interface);
+#else
+        log_warn("SO_BINDTODEVICE not supported on this platform, interface binding skipped");
+#endif
     }
     
     // Bind to DHCPv6 client port

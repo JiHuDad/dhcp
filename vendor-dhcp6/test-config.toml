@@ -1,0 +1,30 @@
+[dhcp6]
+iface = "lo"
+duid_path = "/tmp/vendor-test/duid"
+timeout_seconds = 30
+
+[vendor]
+enterprise = 99999
+sn_env = "SN_NUMBER"
+
+# suboption codes
+code_sn = 71
+code_sig = 72
+code_cert_req = 73
+code_sig_dup = 74
+code_cert_reply = 77
+
+[paths]
+private_key = "/tmp/vendor-test/keys/client.key"
+request_cert = "/tmp/vendor-test/certs/request.pem"
+reply_cert0 = "/tmp/vendor-test/server0.pem"
+reply_cert1 = "/tmp/vendor-test/server1.pem"
+reply_chain_bundle = "/tmp/vendor-test/server_chain.pem"
+
+[advertise_gate]
+enabled = false
+
+[logging]
+level = "info"
+path = "/tmp/vendor-test/vendor-dhcp6.log"
+hex_dump = true

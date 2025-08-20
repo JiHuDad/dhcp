@@ -2,6 +2,7 @@
 #define UTIL_H
 
 #include <stddef.h>
+#include <stdint.h>
 #include <sys/stat.h>
 
 int read_file_all(const char *path, uint8_t **buf, size_t *len);

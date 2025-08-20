@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,6 +7,7 @@
 #include <sys/types.h>
 #include <errno.h>
 #include <ctype.h>
+#include <libgen.h>
 #include "util.h"
 #include "log.h"
 

@@ -1,0 +1,92 @@
+version: '3.8'
+
+services:
+  # DHCPv6 Fake Server
+  dhcp6-server:
+    build: .
+    container_name: dhcp6-server
+    privileged: true
+    networks:
+      dhcp6-net:
+        ipv6_address: 2001:db8::1
+    environment:
+      - ENTERPRISE_NUM=99999
+    command: >
+      bash -c "
+        echo 'Starting DHCPv6 Fake Server...' &&
+        sysctl -w net.ipv6.conf.all.forwarding=1 &&
+        sysctl -w net.ipv6.conf.all.accept_ra=0 &&
+        python3 /app/tests/it/fake_dhcp6_server.py eth0 99999
+      "
+    volumes:
+      - ./tests/logs:/var/log
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+
+  # DHCPv6 Vendor Client
+  dhcp6-client:
+    build: .
+    container_name: dhcp6-client
+    privileged: true
+    networks:
+      dhcp6-net:
+        ipv6_address: 2001:db8::2
+    environment:
+      - SN_NUMBER=DOCKER_CLIENT_987654321
+    depends_on:
+      - dhcp6-server
+    command: >
+      bash -c "
+        echo 'Waiting for server to start...' &&
+        sleep 5 &&
+        echo 'Starting DHCPv6 Vendor Client...' &&
+        sysctl -w net.ipv6.conf.all.accept_ra=0 &&
+        echo 'Testing dry run first...' &&
+        /app/vendor-dhclient --config /etc/vendor/dhcp6-vendor.conf --dry-run &&
+        echo 'Running actual client...' &&
+        /app/vendor-dhclient --config /etc/vendor/dhcp6-vendor.conf --iface eth0 -v
+      "
+    volumes:
+      - ./tests/logs:/var/log
+      - ./tests/output:/var/lib/vendor-dhcp6
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+
+  # Test Runner (for manual testing)
+  test-runner:
+    build: .
+    container_name: dhcp6-test
+    privileged: true
+    networks:
+      dhcp6-net:
+        ipv6_address: 2001:db8::3
+    environment:
+      - SN_NUMBER=TEST_RUNNER_555666777
+    command: >
+      bash -c "
+        echo 'Test Runner Ready' &&
+        echo 'Available commands:' &&
+        echo '  /app/vendor-dhclient --help' &&
+        echo '  /app/test_integration.sh' &&
+        echo '  tcpdump -i eth0 port 546 or port 547' &&
+        /bin/bash
+      "
+    volumes:
+      - ./tests/logs:/var/log
+      - ./tests/output:/var/lib/vendor-dhcp6
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    tty: true
+    stdin_open: true
+
+networks:
+  dhcp6-net:
+    driver: bridge
+    enable_ipv6: true
+    ipam:
+      driver: default
+      config:
+        - subnet: 2001:db8::/64
