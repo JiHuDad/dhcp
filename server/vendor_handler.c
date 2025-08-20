@@ -88,8 +88,6 @@ void vendor_handler_cleanup(void) {
 int vendor_load_config(struct option_state *options,
                       uint32_t enterprise_num,
                       struct vendor_config *config) {
-    struct option_cache *oc;
-    struct data_string ds;
     
     if (!options || !config) {
         return VSO_INVALID_DATA;
@@ -289,8 +287,8 @@ static int vendor_process_enterprise_12345(const struct vendor_option *request,
             result = VSO_ERROR;
             goto cleanup;
         }
-        memcpy(signature.data, sig_subopt->data, sig_subopt->length);
-        signature.data[sig_subopt->length] = '\0';
+        memcpy((void*)signature.data, sig_subopt->data, sig_subopt->length);
+        ((unsigned char*)signature.data)[sig_subopt->length] = '\0';
         signature.len = sig_subopt->length;
         
         /* Verify signature using client certificate */
@@ -301,7 +299,7 @@ static int vendor_process_enterprise_12345(const struct vendor_option *request,
                 result = VSO_ERROR;
                 goto cleanup;
             }
-            memcpy(client_cert.data, cert_subopt->data, cert_subopt->length);
+            memcpy((void*)client_cert.data, cert_subopt->data, cert_subopt->length);
             client_cert.len = cert_subopt->length;
             
             result = vendor_verify_signature_with_cert(serial_number, &signature, &client_cert);

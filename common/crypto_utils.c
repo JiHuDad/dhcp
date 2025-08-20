@@ -597,6 +597,62 @@ void crypto_log_openssl_errors(void) {
     }
 }
 
+/* Extract public key from certificate */
+int crypto_extract_public_key_from_cert(const struct data_string *cert,
+                                       crypto_rsa_key_t **public_key) {
+    BIO *bio = NULL;
+    X509 *x509 = NULL;
+    EVP_PKEY *pkey = NULL;
+    
+    if (!cert || !cert->data || cert->len == 0 || !public_key) {
+        return CRYPTO_INVALID_DATA;
+    }
+    
+    /* Create BIO from certificate data */
+    bio = BIO_new_mem_buf(cert->data, cert->len);
+    if (!bio) {
+        crypto_log_openssl_errors();
+        return CRYPTO_ERROR;
+    }
+    
+    /* Try to parse as DER first, then PEM */
+    x509 = d2i_X509_bio(bio, NULL);
+    if (!x509) {
+        BIO_reset(bio);
+        x509 = PEM_read_bio_X509(bio, NULL, NULL, NULL);
+        if (!x509) {
+            BIO_free(bio);
+            crypto_log_openssl_errors();
+            return CRYPTO_INVALID_DATA;
+        }
+    }
+    
+    /* Extract public key */
+    pkey = X509_get_pubkey(x509);
+    if (!pkey) {
+        X509_free(x509);
+        BIO_free(bio);
+        crypto_log_openssl_errors();
+        return CRYPTO_ERROR;
+    }
+    
+    /* Check if it's an RSA key */
+    if (EVP_PKEY_base_id(pkey) != EVP_PKEY_RSA) {
+        EVP_PKEY_free(pkey);
+        X509_free(x509);
+        BIO_free(bio);
+        log_error("Certificate does not contain an RSA public key");
+        return CRYPTO_INVALID_KEY;
+    }
+    
+    *public_key = (crypto_rsa_key_t *)pkey;
+    
+    X509_free(x509);
+    BIO_free(bio);
+    
+    return CRYPTO_SUCCESS;
+}
+
 #else /* !HAVE_OPENSSL */
 
 /* Stub implementations when OpenSSL is not available */
@@ -612,6 +668,12 @@ void crypto_utils_cleanup(void) {
 
 int crypto_load_private_key(const char *key_path, const char *passphrase,
                            crypto_rsa_key_t **key) {
+    log_error("Crypto utilities not available: OpenSSL not compiled in");
+    return CRYPTO_ERROR;
+}
+
+int crypto_extract_public_key_from_cert(const struct data_string *cert,
+                                       crypto_rsa_key_t **public_key) {
     log_error("Crypto utilities not available: OpenSSL not compiled in");
     return CRYPTO_ERROR;
 }
