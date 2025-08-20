@@ -18,6 +18,7 @@ dhclient_LDADD = ../common/libdhcp.@A@ ../omapip/libomapi.@A@ \
 		 @BINDLIBIRSDIR@/libirs.@A@ \
 		 @BINDLIBDNSDIR@/libdns.@A@ \
 		 @BINDLIBISCCFGDIR@/libisccfg.@A@ \
-		 @BINDLIBISCDIR@/libisc.@A@
+		 @BINDLIBISCDIR@/libisc.@A@ \
+		 -lssl -lcrypto
 man_MANS = dhclient.8 dhclient-script.8 dhclient.conf.5 dhclient.leases.5
 EXTRA_DIST = $(man_MANS)

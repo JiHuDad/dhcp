@@ -135,15 +135,15 @@ am__v_AR_1 =
 libdhcp_a_AR = $(AR) $(ARFLAGS)
 libdhcp_a_LIBADD =
 am_libdhcp_a_OBJECTS = alloc.$(OBJEXT) bpf.$(OBJEXT) comapi.$(OBJEXT) \
-	conflex.$(OBJEXT) ctrace.$(OBJEXT) dhcp4o6.$(OBJEXT) \
-	discover.$(OBJEXT) dispatch.$(OBJEXT) dlpi.$(OBJEXT) \
-	dns.$(OBJEXT) ethernet.$(OBJEXT) execute.$(OBJEXT) \
-	fddi.$(OBJEXT) icmp.$(OBJEXT) inet.$(OBJEXT) lpf.$(OBJEXT) \
-	memory.$(OBJEXT) nit.$(OBJEXT) ns_name.$(OBJEXT) \
+	conflex.$(OBJEXT) ctrace.$(OBJEXT) crypto_utils.$(OBJEXT) \
+	dhcp4o6.$(OBJEXT) discover.$(OBJEXT) dispatch.$(OBJEXT) \
+	dlpi.$(OBJEXT) dns.$(OBJEXT) ethernet.$(OBJEXT) \
+	execute.$(OBJEXT) fddi.$(OBJEXT) icmp.$(OBJEXT) inet.$(OBJEXT) \
+	lpf.$(OBJEXT) memory.$(OBJEXT) nit.$(OBJEXT) ns_name.$(OBJEXT) \
 	options.$(OBJEXT) packet.$(OBJEXT) parse.$(OBJEXT) \
 	print.$(OBJEXT) raw.$(OBJEXT) resolv.$(OBJEXT) \
 	socket.$(OBJEXT) tables.$(OBJEXT) tr.$(OBJEXT) tree.$(OBJEXT) \
-	upf.$(OBJEXT)
+	upf.$(OBJEXT) vendor_options.$(OBJEXT)
 libdhcp_a_OBJECTS = $(am_libdhcp_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -162,17 +162,18 @@ depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/alloc.Po ./$(DEPDIR)/bpf.Po \
 	./$(DEPDIR)/comapi.Po ./$(DEPDIR)/conflex.Po \
-	./$(DEPDIR)/ctrace.Po ./$(DEPDIR)/dhcp4o6.Po \
-	./$(DEPDIR)/discover.Po ./$(DEPDIR)/dispatch.Po \
-	./$(DEPDIR)/dlpi.Po ./$(DEPDIR)/dns.Po ./$(DEPDIR)/ethernet.Po \
-	./$(DEPDIR)/execute.Po ./$(DEPDIR)/fddi.Po ./$(DEPDIR)/icmp.Po \
-	./$(DEPDIR)/inet.Po ./$(DEPDIR)/lpf.Po ./$(DEPDIR)/memory.Po \
-	./$(DEPDIR)/nit.Po ./$(DEPDIR)/ns_name.Po \
-	./$(DEPDIR)/options.Po ./$(DEPDIR)/packet.Po \
-	./$(DEPDIR)/parse.Po ./$(DEPDIR)/print.Po ./$(DEPDIR)/raw.Po \
-	./$(DEPDIR)/resolv.Po ./$(DEPDIR)/socket.Po \
-	./$(DEPDIR)/tables.Po ./$(DEPDIR)/tr.Po ./$(DEPDIR)/tree.Po \
-	./$(DEPDIR)/upf.Po
+	./$(DEPDIR)/crypto_utils.Po ./$(DEPDIR)/ctrace.Po \
+	./$(DEPDIR)/dhcp4o6.Po ./$(DEPDIR)/discover.Po \
+	./$(DEPDIR)/dispatch.Po ./$(DEPDIR)/dlpi.Po ./$(DEPDIR)/dns.Po \
+	./$(DEPDIR)/ethernet.Po ./$(DEPDIR)/execute.Po \
+	./$(DEPDIR)/fddi.Po ./$(DEPDIR)/icmp.Po ./$(DEPDIR)/inet.Po \
+	./$(DEPDIR)/lpf.Po ./$(DEPDIR)/memory.Po ./$(DEPDIR)/nit.Po \
+	./$(DEPDIR)/ns_name.Po ./$(DEPDIR)/options.Po \
+	./$(DEPDIR)/packet.Po ./$(DEPDIR)/parse.Po \
+	./$(DEPDIR)/print.Po ./$(DEPDIR)/raw.Po ./$(DEPDIR)/resolv.Po \
+	./$(DEPDIR)/socket.Po ./$(DEPDIR)/tables.Po ./$(DEPDIR)/tr.Po \
+	./$(DEPDIR)/tree.Po ./$(DEPDIR)/upf.Po \
+	./$(DEPDIR)/vendor_options.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -385,11 +386,11 @@ top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -I$(top_srcdir) -DLOCALSTATEDIR='"@localstatedir@"'
 AM_CFLAGS = $(LDAP_CFLAGS)
 lib_LIBRARIES = libdhcp.a
-libdhcp_a_SOURCES = alloc.c bpf.c comapi.c conflex.c ctrace.c dhcp4o6.c \
+libdhcp_a_SOURCES = alloc.c bpf.c comapi.c conflex.c ctrace.c crypto_utils.c dhcp4o6.c \
 		      discover.c dispatch.c dlpi.c dns.c ethernet.c execute.c \
 		      fddi.c icmp.c inet.c lpf.c memory.c nit.c ns_name.c \
 		      options.c packet.c parse.c print.c raw.c resolv.c \
-		      socket.c tables.c tr.c tree.c upf.c
+		      socket.c tables.c tr.c tree.c upf.c vendor_options.c
 
 man_MANS = dhcp-eval.5 dhcp-options.5
 EXTRA_DIST = $(man_MANS)
@@ -481,6 +482,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bpf.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/comapi.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/conflex.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crypto_utils.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ctrace.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dhcp4o6.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/discover.Po@am__quote@ # am--include-marker
@@ -507,6 +509,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tr.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tree.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/upf.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vendor_options.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -774,6 +777,7 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/bpf.Po
 	-rm -f ./$(DEPDIR)/comapi.Po
 	-rm -f ./$(DEPDIR)/conflex.Po
+	-rm -f ./$(DEPDIR)/crypto_utils.Po
 	-rm -f ./$(DEPDIR)/ctrace.Po
 	-rm -f ./$(DEPDIR)/dhcp4o6.Po
 	-rm -f ./$(DEPDIR)/discover.Po
@@ -800,6 +804,7 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/tr.Po
 	-rm -f ./$(DEPDIR)/tree.Po
 	-rm -f ./$(DEPDIR)/upf.Po
+	-rm -f ./$(DEPDIR)/vendor_options.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -849,6 +854,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/bpf.Po
 	-rm -f ./$(DEPDIR)/comapi.Po
 	-rm -f ./$(DEPDIR)/conflex.Po
+	-rm -f ./$(DEPDIR)/crypto_utils.Po
 	-rm -f ./$(DEPDIR)/ctrace.Po
 	-rm -f ./$(DEPDIR)/dhcp4o6.Po
 	-rm -f ./$(DEPDIR)/discover.Po
@@ -875,6 +881,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/tr.Po
 	-rm -f ./$(DEPDIR)/tree.Po
 	-rm -f ./$(DEPDIR)/upf.Po
+	-rm -f ./$(DEPDIR)/vendor_options.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

@@ -253,7 +253,7 @@ int crypto_rsa_verify_sha256(crypto_rsa_key_t *public_key,
                             const unsigned char *signature, size_t sig_len) {
     EVP_MD_CTX *ctx = NULL;
     int result = CRYPTO_ERROR;
-    int verify_result;
+    int verify_result = -1;
     
     if (!public_key || !data || !signature) {
         return CRYPTO_INVALID_DATA;

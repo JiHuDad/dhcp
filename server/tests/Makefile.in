@@ -87,7 +87,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-@HAVE_ATF_TRUE@am__append_1 = dhcpd_unittests legacy_unittests hash_unittests load_bal_unittests leaseq_unittests
+@HAVE_ATF_TRUE@am__append_1 = dhcpd_unittests legacy_unittests hash_unittests load_bal_unittests leaseq_unittests vendor_handler_unittests
 check_PROGRAMS = $(am__EXEEXT_2)
 subdir = server/tests
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -103,7 +103,8 @@ CONFIG_CLEAN_VPATH_FILES =
 @HAVE_ATF_TRUE@	legacy_unittests$(EXEEXT) \
 @HAVE_ATF_TRUE@	hash_unittests$(EXEEXT) \
 @HAVE_ATF_TRUE@	load_bal_unittests$(EXEEXT) \
-@HAVE_ATF_TRUE@	leaseq_unittests$(EXEEXT)
+@HAVE_ATF_TRUE@	leaseq_unittests$(EXEEXT) \
+@HAVE_ATF_TRUE@	vendor_handler_unittests$(EXEEXT)
 am__EXEEXT_2 = $(am__EXEEXT_1)
 am__dhcpd_unittests_SOURCES_DIST = ../dhcp.c ../bootp.c ../confpars.c \
 	../db.c ../class.c ../failover.c ../omapi.c ../mdb.c \
@@ -164,6 +165,18 @@ am__load_bal_unittests_SOURCES_DIST = ../dhcp.c ../bootp.c \
 load_bal_unittests_OBJECTS = $(am_load_bal_unittests_OBJECTS)
 @HAVE_ATF_TRUE@load_bal_unittests_DEPENDENCIES = $(DHCPLIBS) \
 @HAVE_ATF_TRUE@	$(am__DEPENDENCIES_1)
+am__vendor_handler_unittests_SOURCES_DIST = ../dhcp.c ../bootp.c \
+	../confpars.c ../db.c ../class.c ../failover.c ../omapi.c \
+	../mdb.c ../stables.c ../salloc.c ../ddns.c \
+	../dhcpleasequery.c ../dhcpv6.c ../mdb6.c ../ldap.c \
+	../ldap_casa.c ../dhcpd.c ../leasechain.c \
+	vendor_handler_unittest.c
+@HAVE_ATF_TRUE@am_vendor_handler_unittests_OBJECTS = $(am__objects_1) \
+@HAVE_ATF_TRUE@	vendor_handler_unittest.$(OBJEXT)
+vendor_handler_unittests_OBJECTS =  \
+	$(am_vendor_handler_unittests_OBJECTS)
+@HAVE_ATF_TRUE@vendor_handler_unittests_DEPENDENCIES = $(DHCPLIBS) \
+@HAVE_ATF_TRUE@	$(am__DEPENDENCIES_1)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -189,7 +202,8 @@ am__depfiles_remade = ./$(DEPDIR)/bootp.Po ./$(DEPDIR)/class.Po \
 	./$(DEPDIR)/load_bal_unittest.Po ./$(DEPDIR)/mdb.Po \
 	./$(DEPDIR)/mdb6.Po ./$(DEPDIR)/mdb6_unittest.Po \
 	./$(DEPDIR)/omapi.Po ./$(DEPDIR)/salloc.Po \
-	./$(DEPDIR)/simple_unittest.Po ./$(DEPDIR)/stables.Po
+	./$(DEPDIR)/simple_unittest.Po ./$(DEPDIR)/stables.Po \
+	./$(DEPDIR)/vendor_handler_unittest.Po
 am__mv = mv -f
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -209,12 +223,14 @@ am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
 SOURCES = $(dhcpd_unittests_SOURCES) $(hash_unittests_SOURCES) \
 	$(leaseq_unittests_SOURCES) $(legacy_unittests_SOURCES) \
-	$(load_bal_unittests_SOURCES)
+	$(load_bal_unittests_SOURCES) \
+	$(vendor_handler_unittests_SOURCES)
 DIST_SOURCES = $(am__dhcpd_unittests_SOURCES_DIST) \
 	$(am__hash_unittests_SOURCES_DIST) \
 	$(am__leaseq_unittests_SOURCES_DIST) \
 	$(am__legacy_unittests_SOURCES_DIST) \
-	$(am__load_bal_unittests_SOURCES_DIST)
+	$(am__load_bal_unittests_SOURCES_DIST) \
+	$(am__vendor_handler_unittests_SOURCES_DIST)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
 	install-data-recursive install-dvi-recursive \
@@ -436,6 +452,8 @@ ATF_TESTS = $(am__append_1)
 @HAVE_ATF_TRUE@load_bal_unittests_LDADD = $(DHCPLIBS) $(ATF_LDFLAGS)
 @HAVE_ATF_TRUE@leaseq_unittests_SOURCES = $(DHCPSRC) leaseq_unittest.c
 @HAVE_ATF_TRUE@leaseq_unittests_LDADD = $(DHCPLIBS) $(ATF_LDFLAGS)
+@HAVE_ATF_TRUE@vendor_handler_unittests_SOURCES = $(DHCPSRC) vendor_handler_unittest.c
+@HAVE_ATF_TRUE@vendor_handler_unittests_LDADD = $(DHCPLIBS) $(ATF_LDFLAGS)
 all: all-recursive
 
 .SUFFIXES:
@@ -493,6 +511,10 @@ load_bal_unittests$(EXEEXT): $(load_bal_unittests_OBJECTS) $(load_bal_unittests_
 	@rm -f load_bal_unittests$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(load_bal_unittests_OBJECTS) $(load_bal_unittests_LDADD) $(LIBS)
 
+vendor_handler_unittests$(EXEEXT): $(vendor_handler_unittests_OBJECTS) $(vendor_handler_unittests_DEPENDENCIES) $(EXTRA_vendor_handler_unittests_DEPENDENCIES) 
+	@rm -f vendor_handler_unittests$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(vendor_handler_unittests_OBJECTS) $(vendor_handler_unittests_LDADD) $(LIBS)
+
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 
@@ -522,6 +544,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/salloc.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/simple_unittest.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stables.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vendor_handler_unittest.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -1016,6 +1039,7 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/salloc.Po
 	-rm -f ./$(DEPDIR)/simple_unittest.Po
 	-rm -f ./$(DEPDIR)/stables.Po
+	-rm -f ./$(DEPDIR)/vendor_handler_unittest.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-local distclean-tags
@@ -1082,6 +1106,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/salloc.Po
 	-rm -f ./$(DEPDIR)/simple_unittest.Po
 	-rm -f ./$(DEPDIR)/stables.Po
+	-rm -f ./$(DEPDIR)/vendor_handler_unittest.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

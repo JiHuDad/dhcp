@@ -113,7 +113,7 @@ am_dhcpd_OBJECTS = dhcpd-dhcpd.$(OBJEXT) dhcpd-dhcp.$(OBJEXT) \
 	dhcpd-dhcpleasequery.$(OBJEXT) dhcpd-dhcpv6.$(OBJEXT) \
 	dhcpd-mdb6.$(OBJEXT) dhcpd-ldap.$(OBJEXT) \
 	dhcpd-ldap_casa.$(OBJEXT) dhcpd-leasechain.$(OBJEXT) \
-	dhcpd-ldap_krb_helper.$(OBJEXT)
+	dhcpd-ldap_krb_helper.$(OBJEXT) dhcpd-vendor_handler.$(OBJEXT)
 dhcpd_OBJECTS = $(am_dhcpd_OBJECTS)
 am__DEPENDENCIES_1 =
 dhcpd_DEPENDENCIES = ../common/libdhcp.@A@ ../omapip/libomapi.@A@ \
@@ -147,7 +147,8 @@ am__depfiles_remade = ./$(DEPDIR)/dhcpd-bootp.Po \
 	./$(DEPDIR)/dhcpd-ldap_krb_helper.Po \
 	./$(DEPDIR)/dhcpd-leasechain.Po ./$(DEPDIR)/dhcpd-mdb.Po \
 	./$(DEPDIR)/dhcpd-mdb6.Po ./$(DEPDIR)/dhcpd-omapi.Po \
-	./$(DEPDIR)/dhcpd-salloc.Po ./$(DEPDIR)/dhcpd-stables.Po
+	./$(DEPDIR)/dhcpd-salloc.Po ./$(DEPDIR)/dhcpd-stables.Po \
+	./$(DEPDIR)/dhcpd-vendor_handler.Po
 am__mv = mv -f
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -399,7 +400,8 @@ AM_CPPFLAGS = -I.. -DLOCALSTATEDIR='"@localstatedir@"'
 dist_sysconf_DATA = dhcpd.conf.example
 dhcpd_SOURCES = dhcpd.c dhcp.c bootp.c confpars.c db.c class.c failover.c \
 		omapi.c mdb.c stables.c salloc.c ddns.c dhcpleasequery.c \
-		dhcpv6.c mdb6.c ldap.c ldap_casa.c leasechain.c ldap_krb_helper.c
+		dhcpv6.c mdb6.c ldap.c ldap_casa.c leasechain.c ldap_krb_helper.c \
+		vendor_handler.c
 
 dhcpd_CFLAGS = $(LDAP_CFLAGS)
 dhcpd_LDADD = ../common/libdhcp.@A@ ../omapip/libomapi.@A@ \
@@ -516,6 +518,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dhcpd-omapi.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dhcpd-salloc.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dhcpd-stables.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dhcpd-vendor_handler.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -802,6 +805,20 @@ dhcpd-ldap_krb_helper.obj: ldap_krb_helper.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ldap_krb_helper.c' object='dhcpd-ldap_krb_helper.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dhcpd_CFLAGS) $(CFLAGS) -c -o dhcpd-ldap_krb_helper.obj `if test -f 'ldap_krb_helper.c'; then $(CYGPATH_W) 'ldap_krb_helper.c'; else $(CYGPATH_W) '$(srcdir)/ldap_krb_helper.c'; fi`
+
+dhcpd-vendor_handler.o: vendor_handler.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dhcpd_CFLAGS) $(CFLAGS) -MT dhcpd-vendor_handler.o -MD -MP -MF $(DEPDIR)/dhcpd-vendor_handler.Tpo -c -o dhcpd-vendor_handler.o `test -f 'vendor_handler.c' || echo '$(srcdir)/'`vendor_handler.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dhcpd-vendor_handler.Tpo $(DEPDIR)/dhcpd-vendor_handler.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='vendor_handler.c' object='dhcpd-vendor_handler.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dhcpd_CFLAGS) $(CFLAGS) -c -o dhcpd-vendor_handler.o `test -f 'vendor_handler.c' || echo '$(srcdir)/'`vendor_handler.c
+
+dhcpd-vendor_handler.obj: vendor_handler.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dhcpd_CFLAGS) $(CFLAGS) -MT dhcpd-vendor_handler.obj -MD -MP -MF $(DEPDIR)/dhcpd-vendor_handler.Tpo -c -o dhcpd-vendor_handler.obj `if test -f 'vendor_handler.c'; then $(CYGPATH_W) 'vendor_handler.c'; else $(CYGPATH_W) '$(srcdir)/vendor_handler.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dhcpd-vendor_handler.Tpo $(DEPDIR)/dhcpd-vendor_handler.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='vendor_handler.c' object='dhcpd-vendor_handler.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(dhcpd_CFLAGS) $(CFLAGS) -c -o dhcpd-vendor_handler.obj `if test -f 'vendor_handler.c'; then $(CYGPATH_W) 'vendor_handler.c'; else $(CYGPATH_W) '$(srcdir)/vendor_handler.c'; fi`
 install-man5: $(man_MANS)
 	@$(NORMAL_INSTALL)
 	@list1=''; \
@@ -1128,6 +1145,7 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/dhcpd-omapi.Po
 	-rm -f ./$(DEPDIR)/dhcpd-salloc.Po
 	-rm -f ./$(DEPDIR)/dhcpd-stables.Po
+	-rm -f ./$(DEPDIR)/dhcpd-vendor_handler.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -1192,6 +1210,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/dhcpd-omapi.Po
 	-rm -f ./$(DEPDIR)/dhcpd-salloc.Po
 	-rm -f ./$(DEPDIR)/dhcpd-stables.Po
+	-rm -f ./$(DEPDIR)/dhcpd-vendor_handler.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

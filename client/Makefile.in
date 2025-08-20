@@ -105,7 +105,7 @@ am__installdirs = "$(DESTDIR)$(sbindir)" "$(DESTDIR)$(man5dir)" \
 	"$(DESTDIR)$(man8dir)" "$(DESTDIR)$(sysconfdir)"
 PROGRAMS = $(sbin_PROGRAMS)
 am_dhclient_OBJECTS = client_tables.$(OBJEXT) clparse.$(OBJEXT) \
-	dhclient.$(OBJEXT) dhc6.$(OBJEXT)
+	dhclient.$(OBJEXT) dhc6.$(OBJEXT) vendor_client.$(OBJEXT)
 dhclient_OBJECTS = $(am_dhclient_OBJECTS)
 dhclient_DEPENDENCIES = ../common/libdhcp.@A@ ../omapip/libomapi.@A@
 AM_V_P = $(am__v_P_@AM_V@)
@@ -125,7 +125,7 @@ depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/client_tables.Po \
 	./$(DEPDIR)/clparse.Po ./$(DEPDIR)/dhc6.Po \
-	./$(DEPDIR)/dhclient.Po
+	./$(DEPDIR)/dhclient.Po ./$(DEPDIR)/vendor_client.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -373,6 +373,7 @@ AM_CPPFLAGS = -DCLIENT_PATH='"PATH=$(sbindir):/sbin:/bin:/usr/sbin:/usr/bin"' \
 	-DLOCALSTATEDIR='"$(localstatedir)"'
 dist_sysconf_DATA = dhclient.conf.example
 dhclient_SOURCES = client_tables.c clparse.c dhclient.c dhc6.c \
+		   vendor_client.c \
 		   scripts/bsdos scripts/freebsd scripts/linux scripts/macos \
 		   scripts/netbsd scripts/nextstep scripts/openbsd \
 		   scripts/solaris scripts/openwrt
@@ -381,7 +382,8 @@ dhclient_LDADD = ../common/libdhcp.@A@ ../omapip/libomapi.@A@ \
 		 @BINDLIBIRSDIR@/libirs.@A@ \
 		 @BINDLIBDNSDIR@/libdns.@A@ \
 		 @BINDLIBISCCFGDIR@/libisccfg.@A@ \
-		 @BINDLIBISCDIR@/libisc.@A@
+		 @BINDLIBISCDIR@/libisc.@A@ \
+		 -lssl -lcrypto
 
 man_MANS = dhclient.8 dhclient-script.8 dhclient.conf.5 dhclient.leases.5
 EXTRA_DIST = $(man_MANS)
@@ -475,6 +477,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/clparse.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dhc6.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dhclient.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vendor_client.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -806,6 +809,7 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/clparse.Po
 	-rm -f ./$(DEPDIR)/dhc6.Po
 	-rm -f ./$(DEPDIR)/dhclient.Po
+	-rm -f ./$(DEPDIR)/vendor_client.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -855,6 +859,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/clparse.Po
 	-rm -f ./$(DEPDIR)/dhc6.Po
 	-rm -f ./$(DEPDIR)/dhclient.Po
+	-rm -f ./$(DEPDIR)/vendor_client.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

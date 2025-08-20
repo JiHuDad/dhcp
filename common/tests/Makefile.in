@@ -88,7 +88,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 @HAVE_ATF_TRUE@am__append_1 = alloc_unittest dns_unittest misc_unittest ns_name_unittest \
-@HAVE_ATF_TRUE@	option_unittest domain_name_unittest
+@HAVE_ATF_TRUE@	option_unittest domain_name_unittest crypto_utils_unittest vendor_options_unittest
 
 check_PROGRAMS = $(am__EXEEXT_2)
 subdir = common/tests
@@ -105,7 +105,9 @@ CONFIG_CLEAN_VPATH_FILES =
 @HAVE_ATF_TRUE@	dns_unittest$(EXEEXT) misc_unittest$(EXEEXT) \
 @HAVE_ATF_TRUE@	ns_name_unittest$(EXEEXT) \
 @HAVE_ATF_TRUE@	option_unittest$(EXEEXT) \
-@HAVE_ATF_TRUE@	domain_name_unittest$(EXEEXT)
+@HAVE_ATF_TRUE@	domain_name_unittest$(EXEEXT) \
+@HAVE_ATF_TRUE@	crypto_utils_unittest$(EXEEXT) \
+@HAVE_ATF_TRUE@	vendor_options_unittest$(EXEEXT)
 am__EXEEXT_2 = $(am__EXEEXT_1)
 am__alloc_unittest_SOURCES_DIST = test_alloc.c \
 	$(top_srcdir)/tests/t_api_dhcp.c
@@ -115,6 +117,15 @@ alloc_unittest_OBJECTS = $(am_alloc_unittest_OBJECTS)
 am__DEPENDENCIES_1 =
 @HAVE_ATF_TRUE@alloc_unittest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 @HAVE_ATF_TRUE@	../libdhcp.@A@ ../../omapip/libomapi.@A@
+am__crypto_utils_unittest_SOURCES_DIST = crypto_utils_unittest.c \
+	$(top_srcdir)/tests/t_api_dhcp.c
+@HAVE_ATF_TRUE@am_crypto_utils_unittest_OBJECTS =  \
+@HAVE_ATF_TRUE@	crypto_utils_unittest.$(OBJEXT) \
+@HAVE_ATF_TRUE@	t_api_dhcp.$(OBJEXT)
+crypto_utils_unittest_OBJECTS = $(am_crypto_utils_unittest_OBJECTS)
+@HAVE_ATF_TRUE@crypto_utils_unittest_DEPENDENCIES =  \
+@HAVE_ATF_TRUE@	$(am__DEPENDENCIES_1) ../libdhcp.@A@ \
+@HAVE_ATF_TRUE@	../../omapip/libomapi.@A@
 am__dns_unittest_SOURCES_DIST = dns_unittest.c \
 	$(top_srcdir)/tests/t_api_dhcp.c
 @HAVE_ATF_TRUE@am_dns_unittest_OBJECTS = dns_unittest.$(OBJEXT) \
@@ -151,6 +162,16 @@ am__option_unittest_SOURCES_DIST = option_unittest.c \
 option_unittest_OBJECTS = $(am_option_unittest_OBJECTS)
 @HAVE_ATF_TRUE@option_unittest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 @HAVE_ATF_TRUE@	../libdhcp.@A@ ../../omapip/libomapi.@A@
+am__vendor_options_unittest_SOURCES_DIST = vendor_options_unittest.c \
+	$(top_srcdir)/tests/t_api_dhcp.c
+@HAVE_ATF_TRUE@am_vendor_options_unittest_OBJECTS =  \
+@HAVE_ATF_TRUE@	vendor_options_unittest.$(OBJEXT) \
+@HAVE_ATF_TRUE@	t_api_dhcp.$(OBJEXT)
+vendor_options_unittest_OBJECTS =  \
+	$(am_vendor_options_unittest_OBJECTS)
+@HAVE_ATF_TRUE@vendor_options_unittest_DEPENDENCIES =  \
+@HAVE_ATF_TRUE@	$(am__DEPENDENCIES_1) ../libdhcp.@A@ \
+@HAVE_ATF_TRUE@	../../omapip/libomapi.@A@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -166,10 +187,12 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/includes
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/dns_unittest.Po \
-	./$(DEPDIR)/domain_name_test.Po ./$(DEPDIR)/misc_unittest.Po \
-	./$(DEPDIR)/ns_name_test.Po ./$(DEPDIR)/option_unittest.Po \
-	./$(DEPDIR)/t_api_dhcp.Po ./$(DEPDIR)/test_alloc.Po
+am__depfiles_remade = ./$(DEPDIR)/crypto_utils_unittest.Po \
+	./$(DEPDIR)/dns_unittest.Po ./$(DEPDIR)/domain_name_test.Po \
+	./$(DEPDIR)/misc_unittest.Po ./$(DEPDIR)/ns_name_test.Po \
+	./$(DEPDIR)/option_unittest.Po ./$(DEPDIR)/t_api_dhcp.Po \
+	./$(DEPDIR)/test_alloc.Po \
+	./$(DEPDIR)/vendor_options_unittest.Po
 am__mv = mv -f
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -187,15 +210,18 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(alloc_unittest_SOURCES) $(dns_unittest_SOURCES) \
-	$(domain_name_unittest_SOURCES) $(misc_unittest_SOURCES) \
-	$(ns_name_unittest_SOURCES) $(option_unittest_SOURCES)
+SOURCES = $(alloc_unittest_SOURCES) $(crypto_utils_unittest_SOURCES) \
+	$(dns_unittest_SOURCES) $(domain_name_unittest_SOURCES) \
+	$(misc_unittest_SOURCES) $(ns_name_unittest_SOURCES) \
+	$(option_unittest_SOURCES) $(vendor_options_unittest_SOURCES)
 DIST_SOURCES = $(am__alloc_unittest_SOURCES_DIST) \
+	$(am__crypto_utils_unittest_SOURCES_DIST) \
 	$(am__dns_unittest_SOURCES_DIST) \
 	$(am__domain_name_unittest_SOURCES_DIST) \
 	$(am__misc_unittest_SOURCES_DIST) \
 	$(am__ns_name_unittest_SOURCES_DIST) \
-	$(am__option_unittest_SOURCES_DIST)
+	$(am__option_unittest_SOURCES_DIST) \
+	$(am__vendor_options_unittest_SOURCES_DIST)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
 	install-data-recursive install-dvi-recursive \
@@ -434,6 +460,20 @@ ATF_TESTS = $(am__append_1)
 @HAVE_ATF_TRUE@	@BINDLIBDNSDIR@/libdns.@A@ \
 @HAVE_ATF_TRUE@	@BINDLIBISCCFGDIR@/libisccfg.@A@ \
 @HAVE_ATF_TRUE@	@BINDLIBISCDIR@/libisc.@A@
+@HAVE_ATF_TRUE@crypto_utils_unittest_SOURCES = crypto_utils_unittest.c $(top_srcdir)/tests/t_api_dhcp.c
+@HAVE_ATF_TRUE@crypto_utils_unittest_LDADD = $(ATF_LDFLAGS) \
+@HAVE_ATF_TRUE@	../libdhcp.@A@ ../../omapip/libomapi.@A@ \
+@HAVE_ATF_TRUE@	@BINDLIBIRSDIR@/libirs.@A@ \
+@HAVE_ATF_TRUE@	@BINDLIBDNSDIR@/libdns.@A@ \
+@HAVE_ATF_TRUE@	@BINDLIBISCCFGDIR@/libisccfg.@A@ \
+@HAVE_ATF_TRUE@	@BINDLIBISCDIR@/libisc.@A@
+@HAVE_ATF_TRUE@vendor_options_unittest_SOURCES = vendor_options_unittest.c $(top_srcdir)/tests/t_api_dhcp.c
+@HAVE_ATF_TRUE@vendor_options_unittest_LDADD = $(ATF_LDFLAGS) \
+@HAVE_ATF_TRUE@	../libdhcp.@A@ ../../omapip/libomapi.@A@ \
+@HAVE_ATF_TRUE@	@BINDLIBIRSDIR@/libirs.@A@ \
+@HAVE_ATF_TRUE@	@BINDLIBDNSDIR@/libdns.@A@ \
+@HAVE_ATF_TRUE@	@BINDLIBISCCFGDIR@/libisccfg.@A@ \
+@HAVE_ATF_TRUE@	@BINDLIBISCDIR@/libisc.@A@
 all: all-recursive
 
 .SUFFIXES:
@@ -475,6 +515,10 @@ alloc_unittest$(EXEEXT): $(alloc_unittest_OBJECTS) $(alloc_unittest_DEPENDENCIES
 	@rm -f alloc_unittest$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(alloc_unittest_OBJECTS) $(alloc_unittest_LDADD) $(LIBS)
 
+crypto_utils_unittest$(EXEEXT): $(crypto_utils_unittest_OBJECTS) $(crypto_utils_unittest_DEPENDENCIES) $(EXTRA_crypto_utils_unittest_DEPENDENCIES) 
+	@rm -f crypto_utils_unittest$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(crypto_utils_unittest_OBJECTS) $(crypto_utils_unittest_LDADD) $(LIBS)
+
 dns_unittest$(EXEEXT): $(dns_unittest_OBJECTS) $(dns_unittest_DEPENDENCIES) $(EXTRA_dns_unittest_DEPENDENCIES) 
 	@rm -f dns_unittest$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(dns_unittest_OBJECTS) $(dns_unittest_LDADD) $(LIBS)
@@ -495,12 +539,17 @@ option_unittest$(EXEEXT): $(option_unittest_OBJECTS) $(option_unittest_DEPENDENC
 	@rm -f option_unittest$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(option_unittest_OBJECTS) $(option_unittest_LDADD) $(LIBS)
 
+vendor_options_unittest$(EXEEXT): $(vendor_options_unittest_OBJECTS) $(vendor_options_unittest_DEPENDENCIES) $(EXTRA_vendor_options_unittest_DEPENDENCIES) 
+	@rm -f vendor_options_unittest$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(vendor_options_unittest_OBJECTS) $(vendor_options_unittest_LDADD) $(LIBS)
+
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crypto_utils_unittest.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dns_unittest.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/domain_name_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/misc_unittest.Po@am__quote@ # am--include-marker
@@ -508,6 +557,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/option_unittest.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/t_api_dhcp.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_alloc.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vendor_options_unittest.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -741,13 +791,15 @@ clean: clean-recursive
 clean-am: clean-checkPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-recursive
-		-rm -f ./$(DEPDIR)/dns_unittest.Po
+		-rm -f ./$(DEPDIR)/crypto_utils_unittest.Po
+	-rm -f ./$(DEPDIR)/dns_unittest.Po
 	-rm -f ./$(DEPDIR)/domain_name_test.Po
 	-rm -f ./$(DEPDIR)/misc_unittest.Po
 	-rm -f ./$(DEPDIR)/ns_name_test.Po
 	-rm -f ./$(DEPDIR)/option_unittest.Po
 	-rm -f ./$(DEPDIR)/t_api_dhcp.Po
 	-rm -f ./$(DEPDIR)/test_alloc.Po
+	-rm -f ./$(DEPDIR)/vendor_options_unittest.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-local distclean-tags
@@ -793,13 +845,15 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-recursive
-		-rm -f ./$(DEPDIR)/dns_unittest.Po
+		-rm -f ./$(DEPDIR)/crypto_utils_unittest.Po
+	-rm -f ./$(DEPDIR)/dns_unittest.Po
 	-rm -f ./$(DEPDIR)/domain_name_test.Po
 	-rm -f ./$(DEPDIR)/misc_unittest.Po
 	-rm -f ./$(DEPDIR)/ns_name_test.Po
 	-rm -f ./$(DEPDIR)/option_unittest.Po
 	-rm -f ./$(DEPDIR)/t_api_dhcp.Po
 	-rm -f ./$(DEPDIR)/test_alloc.Po
+	-rm -f ./$(DEPDIR)/vendor_options_unittest.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
